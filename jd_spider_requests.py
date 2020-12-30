@@ -8,7 +8,8 @@ import pickle
 
 from lxml import etree
 from jd_logger import logger
-from timer import Timer
+from timer import BuyTimer
+from timer import ReserveTimer
 from config import global_config
 from concurrent.futures import ProcessPoolExecutor
 from exception import SKException
@@ -271,11 +272,12 @@ class JdSeckill(object):
 
         # 初始化信息
         self.sku_id = global_config.getRaw('config', 'sku_id')
-        self.seckill_num = 2
+        self.seckill_num = 1
         self.seckill_init_info = dict()
         self.seckill_url = dict()
         self.seckill_order_data = dict()
-        self.timers = Timer()
+        self.timers = BuyTimer()
+        self.reserve_timers = ReserveTimer()
 
         self.session = self.spider_session.get_session()
         self.user_agent = self.spider_session.user_agent
@@ -357,7 +359,7 @@ class JdSeckill(object):
                     self.request_seckill_checkout_page()
                     self.submit_seckill_order()
             except Exception as e:
-                logger.info('抢购发生异常，稍后继续执行！', e)
+                logger.info('抢购发生异常，稍后继续执行！%s', e)
             wait_some_time()
 
     def make_reserve(self):
@@ -376,7 +378,7 @@ class JdSeckill(object):
         resp = self.session.get(url=url, params=payload, headers=headers)
         resp_json = parse_json(resp.text)
         reserve_url = resp_json.get('url')
-        self.timers.start()
+        self.reserve_timers.start()
         while True:
             try:
                 self.session.get(url='https:' + reserve_url)

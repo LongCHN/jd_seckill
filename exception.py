@@ -6,3 +6,7 @@ class SKException(Exception):
 
     def __init__(self, message):
         super().__init__(message)
+
+
+class SKOverTimeException(SKException):
+    pass
