@@ -8,5 +8,5 @@ class SKException(Exception):
         super().__init__(message)
 
 
-class SKOverTimeException(SKException):
+class SKNextDayException(SKException):
     pass

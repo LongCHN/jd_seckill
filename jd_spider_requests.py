@@ -5,6 +5,7 @@ import functools
 import json
 import os
 import pickle
+import sys
 
 from lxml import etree
 from jd_logger import logger
@@ -13,6 +14,7 @@ from timer import ReserveTimer
 from config import global_config
 from concurrent.futures import ProcessPoolExecutor
 from exception import SKException
+from exception import SKNextDayException
 from util import (
     parse_json,
     send_wechat,
@@ -276,7 +278,7 @@ class JdSeckill(object):
 
         # 初始化信息
         self.sku_id = global_config.getRaw('config', 'sku_id')
-        self.seckill_num = 1
+        self.seckill_num = int(global_config.getRaw('config', 'seckill_num'))
         self.seckill_init_info = dict()
         self.seckill_url = dict()
         self.seckill_order_data = dict()
@@ -361,7 +363,13 @@ class JdSeckill(object):
                 self.request_seckill_url()
                 while True:
                     self.request_seckill_checkout_page()
-                    self.submit_seckill_order()
+                    submit_ret = self.submit_seckill_order()
+                    if submit_ret:
+                        logger.info('已经抢购成功,退出程序!!!!!!!!')
+                        sys.exit()
+            except SKNextDayException as e:
+                logger.info('开始第二天抢购，先预约上')
+                self.reserve()
             except Exception as e:
                 logger.info('抢购发生异常，稍后继续执行！%s', e)
             wait_some_time()

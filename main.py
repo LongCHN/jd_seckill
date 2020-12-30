@@ -14,10 +14,9 @@ if __name__ == '__main__':
     .o. 88P o888bood8P'           8""88888P'  `Y8bod8P' `Y8bod8P' o888o o888o o888o o888o o888o 
     `Y888P                                                                                                                                                  
                                                
-功能列表：     
- 1.预约+抢购商品                                                                        
- 2.预约商品
- 3.秒杀抢购商品
+功能列表                                                                   
+ 1.预约商品
+ 2.预约+秒杀抢购商品
     """
     print(a)
 
@@ -25,10 +24,7 @@ if __name__ == '__main__':
     choice_function = input('请选择:')
     if choice_function == '1':
         jd_seckill.reserve()
-        jd_seckill.seckill_by_proc_pool()
     elif choice_function == '2':
-        jd_seckill.reserve()
-    elif choice_function == '3':
         jd_seckill.seckill_by_proc_pool()
     else:
         print('没有此功能')
