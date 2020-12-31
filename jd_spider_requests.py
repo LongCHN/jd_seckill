@@ -282,12 +282,15 @@ class JdSeckill(object):
         self.seckill_init_info = dict()
         self.seckill_url = dict()
         self.seckill_order_data = dict()
-        self.timers = BuyTimer()
-        self.reserve_timers = ReserveTimer()
+        self.init_timers()
 
         self.session = self.spider_session.get_session()
         self.user_agent = self.spider_session.user_agent
         self.nick_name = None
+
+    def init_timers(self):
+        self.timers = BuyTimer()
+        self.reserve_timers = ReserveTimer()
 
     def login_by_qrcode(self):
         """
@@ -367,7 +370,12 @@ class JdSeckill(object):
                     if submit_ret:
                         logger.info('已经抢购成功,退出程序!!!!!!!!')
                         sys.exit()
+                    if self.timers.is_time_over():
+                        logger.info('抢购时间已经超过%s分钟，等待下次抢购', self.timers.delta_time)
+                        raise SKNextDayException()
             except SKNextDayException as e:
+                logger.info('重新初始化抢购参数……')
+                self.init_timers()
                 logger.info('开始第二天抢购，先预约上')
                 self.reserve()
             except Exception as e:
@@ -629,7 +637,7 @@ class JdSeckill(object):
             return True
         else:
             logger.info('抢购失败，返回信息:{}'.format(resp_json))
-            if global_config.getRaw('messenger', 'enable') == 'true':
-                error_message = '抢购失败，返回信息:{}'.format(resp_json)
-                send_wechat(error_message)
+            # if global_config.getRaw('messenger', 'enable') == 'true':
+            #     error_message = '抢购失败，返回信息:{}'.format(resp_json)
+            #     send_wechat(error_message)
             return False
