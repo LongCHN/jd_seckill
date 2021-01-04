@@ -9,8 +9,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 
-from config import global_config
-from jd_logger import logger
+from jd_seckill.config import global_config
+from jd_seckill.jd_logger import logger
 
 
 USER_AGENTS = [

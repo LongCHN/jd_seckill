@@ -2,13 +2,13 @@
 import time
 import requests
 import json
-
 from datetime import datetime
 from datetime import date
 from datetime import timedelta
-from jd_logger import logger
-from config import global_config
-from exception import SKNextDayException
+
+from jd_seckill.jd_logger import logger
+from jd_seckill.config import global_config
+from jd_seckill.exception import SKNextDayException
 
 
 class Timer(object):
