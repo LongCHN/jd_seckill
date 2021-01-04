@@ -118,9 +118,9 @@ test/
 cookies/
 *.cookies
 qr_code.png
-
 # jupyter
 .ipynb_checkpoints
 /test/
 # config
 config.ini
+/.user_data/

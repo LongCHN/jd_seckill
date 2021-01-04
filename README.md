@@ -90,10 +90,10 @@
 > 随便找一个商品下单，然后进入结算页面，打开浏览器的调试窗口，切换到控制台Tab页，在控制台中输入变量`_JdTdudfp`，即可从输出的Json中获取`eid`和`fp`。  
 > 不会的话参考原作者的issue https://github.com/zhou-xiaojun/jd_mask/issues/22
 
-(2)`sku_id`,`DEFAULT_USER_AGENT` 
+(2)`sku_id`,`default_user_agent` 
 > `sku_id`已经按照茅台的填好。
 > `cookies_string` 现在已经不需要填写了
-> `DEFAULT_USER_AGENT` 可以用默认的。谷歌浏览器也可以浏览器地址栏中输入about:version 查看`USER_AGENT`替换
+> `default_user_agent` 可以用默认的。谷歌浏览器也可以浏览器地址栏中输入about:version 查看`USER_AGENT`替换
 
 (3)配置一下时间
 > 现在不强制要求同步最新时间了，程序会自动同步京东时间
@@ -123,6 +123,82 @@ $ zbarimg qr_code.png > qrcode.txt && qrencode -r qrcode.txt -o - -t UTF8 # 解�
 抢购是否成功通常在程序开始的一分钟内可见分晓！  
 搜索日志，出现“抢购成功，订单号xxxxx"，代表成功抢到了，务必半小时内支付订单！程序暂时不支持自动停止，需要手动STOP！  
 若两分钟还未抢购成功，基本上就是没抢到！程序暂时不支持自动停止，需要手动STOP！  
+
+
+## Docker 运行
+> 自行准备`docker`或`docker-compose`环境  
+> 修改`dockerfile`目录中的配置文件`docker.env`  
+> 目前支持直接使用`docker`的方式进行管理，也支持`docker-compose`的方式进行管理，根据自己的使用习惯进行选择  
+> 推荐使用`docker-compose`的方式，更方便一点  
+
+### 使用Docker-Compose进行容器管理（推荐）
+
+#### 启动容器（本步骤会自动判断是否需要构建）
+
+```bash
+$ sudo docker-compose -f compose/docker-compose.yml up 
+```
+
+> 注意：
+> 1. 默认运行选项为秒杀  
+> 1. 容器默认前端运行，如果需要停止容器连续按两次`Ctrl+C`。
+> 1. 如果想后端运行，执行命令`sudo docker-compose -f compose/docker-compose.yml up -d`。
+> 1. 如果存在名称为`jd-seckill`的非`docker-compose`创建的容器，需要执行`sudo docker rm -f jd-seckill`先进行删除。
+
+#### 查看登录二维码
+```bash
+$ sudo docker-compose -f compose/docker-compose.yml exec jd-seckill qrcode
+```
+
+#### 停止容器
+
+```bash
+$ sudo docker-compose -f compose/docker-compose.yml down -t 0 
+```
+
+#### 滚动打印运行日志
+```bash
+$ sudo docker-compose -f compose/docker-compose.yml logs -f
+```
+
+#### 查看容器状态
+```bash
+$ sudo docker-compose -f compose/docker-compose.yml ps
+```
+
+### 使用Docker直接进行容器管理
+
+#### 构建镜像
+```bash
+$ cd dockerfile
+$ sudo docker build -t jd-seckill:latest .
+```
+
+#### 启动容器
+```bash
+$ cd dockerfile
+$ sudo docker run -it --rm --env-file docker.env --name jd-seckill jd-seckill:latest
+```
+
+#### 查看登录二维码
+```bash
+$ sudo docker exec jd-seckill qrcode
+```
+
+#### 停止容器
+```bash
+$ sudo docker stop jd-seckill -t 0
+```
+
+#### 滚动打印运行日志
+```bash
+$ sudo docker logs jd-seckill -f
+```
+
+#### 查看容器状态
+```bash
+$ sudo docker ps -a
+```
 
 ## 打赏
 不用再打赏了，抢到茅台的同学请保持这份喜悦，没抢到的继续加油 :)  
